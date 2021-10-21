@@ -1,0 +1,6 @@
+__pycache__/
+notes.txt
+.vscode/
+wandb/
+data/
+out/
