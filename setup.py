@@ -11,7 +11,7 @@ setup(
     packages=setuptools.find_packages(),
     install_requires=[
         "torch>=1.7.0",
-        "librosa",
-        "einops"   
+        "einops",
+        "nnAudio"   
     ]
 )

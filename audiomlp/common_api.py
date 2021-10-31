@@ -28,6 +28,17 @@ def load_model(model_file_path: str) -> nn.Module:
     return model
 
 
+def initial_padding(audio, sr=16000, hop_ms=10, window_ms=30):
+    init_pad = 0
+    if window_ms // 2 > hop_ms:
+        init_pad_ms = window_ms // 2 - hop_ms # 5ms
+        init_pad = int(init_pad_ms / 1000 * sr)
+    end_pad_ms = window_ms // 2
+    end_pad = int(end_pad_ms / 1000 * sr)
+    return F.pad(audio, (init_pad, end_pad), "constant", 0)
+    
+
+@torch.no_grad()
 def get_timestamp_embeddings(audio: torch.Tensor, model: nn.Module) -> Tuple[torch.Tensor, torch.Tensor]:
     """Returns embeddings at regular intervals centered at timestamps, as well as the timestamps themselves.
 
@@ -40,16 +51,17 @@ def get_timestamp_embeddings(audio: torch.Tensor, model: nn.Module) -> Tuple[tor
         timestamps (torch.Tensor): A float32 Tensor with shape (n_sounds, n_timestamps). Centered timestamps in milliseconds corresponding to each embedding in the output.
     """
 
-    t_ms = 1000 * audio.shape[1] / model.sample_rate
+    sr = model.sample_rate
     window_ms = 30
     hop_ms = 10
 
-    assert t_ms >= window_ms, f"audio must be at least {window_ms}ms, but got {t_ms}ms."
+    audio = initial_padding(audio, sr=sr, hop_ms=hop_ms, window_ms=window_ms)
 
+    t_ms = 1000 * audio.shape[1] / sr
     n = int((t_ms - window_ms) / hop_ms + 1)
-    init = 15
+    init = hop_ms
 
-    timestamps = torch.linspace(init, init + (n - 1) * 10, n).expand(audio.shape[0], -1)
+    timestamps = torch.linspace(init, init + (n - 1) * hop_ms, n).expand(audio.shape[0], -1)
     embeddings = model(audio)
 
     assert embeddings.shape[1] >= n
@@ -60,6 +72,7 @@ def get_timestamp_embeddings(audio: torch.Tensor, model: nn.Module) -> Tuple[tor
     return embeddings, timestamps
 
 
+@torch.no_grad()
 def get_scene_embeddings(audio: torch.Tensor, model: nn.Module) -> torch.Tensor:
     """Returns a single embedding for the entire audio clip.
 
@@ -70,7 +83,12 @@ def get_scene_embeddings(audio: torch.Tensor, model: nn.Module) -> torch.Tensor:
     Returns:
         embedding (torch.Tensor): A float32 Tensor with shape (n_sounds, model.scene_embedding_size).
     """
+    sr = model.sample_rate
+    window_ms = 30
+    hop_ms = 10
 
+    audio = initial_padding(audio, sr=sr, hop_ms=hop_ms, window_ms=window_ms)
+    
     embed_t = model.scene_embedding_size // model.timestamp_embedding_size # 198 -> 2s
     embeddings = model(audio) # (b, t, f) 
     b, t, f = embeddings.shape

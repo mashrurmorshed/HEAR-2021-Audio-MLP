@@ -185,7 +185,7 @@ class gMLP_Decoder(nn.Module):
         input_res = [40, 98],
         patch_res = [40, 1],
         dim = 64,
-        embed_dim = 8,
+        embed_dim = 4,
         depth = 6,
         ff_mult = 4,
         prob_survival = 0.9,
