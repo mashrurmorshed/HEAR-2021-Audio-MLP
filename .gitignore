@@ -4,3 +4,5 @@ notes.txt
 wandb/
 data/
 out/
+test_interp.py
+test.py
