@@ -54,8 +54,9 @@ class AudioMAE_Wrapper(nn.Module):
         x = self.encoder(x)
 
         # compensate for chunking
-        x = F.pad(x, (0, 0, 1, 1), mode="replicate")
-        x = rearrange(x, "(b t) d f -> b (t d) f", b=b)
+        x = rearrange(x, "b d f -> b f d") # replicate cannot pad arbitrary axis
+        x = F.pad(x, (1, 1), mode="replicate")
+        x = rearrange(x, "(b t) f d -> b (t d) f", b=b)
         x = x[:, 1:-1, :]            
         return x
 
