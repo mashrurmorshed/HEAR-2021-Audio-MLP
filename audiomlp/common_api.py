@@ -22,7 +22,12 @@ def load_model(model_file_path: str) -> nn.Module:
     """
 
     embed_dim = 8 # one of (4, 8)
-    model = AudioMAE_Wrapper(encoder_params={"embed_dim": embed_dim})
+    model = AudioMAE_Wrapper(
+        sample_rate=16000,
+        timestamp_embedding_size=embed_dim,
+        scene_embedding_size=embed_dim * 198,
+        encoder_params={"embed_dim": embed_dim}
+    )
     
     assert isinstance(model, nn.Module)
     assert hasattr(model, "sample_rate")
