@@ -37,6 +37,9 @@ hear-validator audiomlp --model checkpoints/<ckpt>.pth
 
 † <sub>Only considering the encoder, which is used for generating embeddings. The whole autoencoder has twice the parameters.</sub><br>
 \* <sub>Although there is no direct way to count FLOPS like parameters, you can use [facebookresearch/fvcore](https://github.com/facebookresearch/fvcore/blob/main/docs/flop_count.md). The FLOPS measured are per single 1s audio input (tensor of shape `(1, 16000)`).</sub>
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />The trained checkpoints are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>. You may also download them from drive: [ [audio-mae-f4-v1](https://drive.google.com/uc?id=1Fw60-jSVDMabhKaZIqnzAYHYZoNyRX8s&export=download) | [audio-mae-f8-v2](https://drive.google.com/uc?id=14p4i3JkE-OFtv43OiWS43hsoTACZhOBd&export=download) ].
+
 ## Notes
 
 All models were trained on:
