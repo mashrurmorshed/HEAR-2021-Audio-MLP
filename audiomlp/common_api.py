@@ -21,7 +21,7 @@ def load_model(model_file_path: str) -> nn.Module:
         nn.Module: Model instance.
     """
 
-    embed_dim = 4 # one of (4, 8)
+    embed_dim = 8 # one of (4, 8)
     model = AudioMAE_Wrapper(encoder_params={"embed_dim": embed_dim})
     
     assert isinstance(model, nn.Module)
