@@ -1,1 +1,1 @@
-from .wrapper import AudioMAE_Wrapper
+from audiomlp.models.wrapper import AudioMAE_Wrapper

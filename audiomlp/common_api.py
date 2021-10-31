@@ -1,3 +1,5 @@
+"""*Common API for HEAR-2021@NeurIPS'21*"""
+
 import torch
 from torch import nn, Tensor
 from torch.nn import functional as F
@@ -5,7 +7,8 @@ from einops import rearrange
 import numpy as np
 from typing import Tuple
 
-from .models import AudioMAE_Wrapper
+from audiomlp.models import AudioMAE_Wrapper
+from audiomlp.utils import initial_padding
 
 
 def load_model(model_file_path: str) -> nn.Module:
@@ -32,23 +35,6 @@ def load_model(model_file_path: str) -> nn.Module:
     model.eval()
 
     return model
-
-
-def initial_padding(audio: Tensor, sr=16000, hop_ms=10, window_ms=30):
-    """Do some initial padding in order to get embeddings at the start/end of audio.
-
-    Args:
-        audio (Tensor): n_sounds x n_samples of mono audio.
-        sr (int, optional): Sample rate. Defaults to 16000.
-        hop_ms (int, optional): Hop length in ms. Defaults to 10.
-        window_ms (int, optional): Window length in ms. Defaults to 30.
-
-    Returns:
-        Tensor: n_sounds x n_samples_padded.
-    """
-    init_pad = int((window_ms // 2 - hop_ms) / 1000 * sr) if window_ms // 2 > hop_ms else 0
-    end_pad = int((window_ms // 2 ) / 1000 * sr)
-    return F.pad(audio, (init_pad, end_pad), "constant", 0)
     
 
 @torch.no_grad()

@@ -1,26 +1,36 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from .audio_mae import gMLP_Encoder
+from audiomlp.models.audio_mae import gMLP_Encoder
 from nnAudio.Spectrogram import MelSpectrogram
 from einops import rearrange
 
 
 class AudioMAE_Wrapper(nn.Module):
-    """Shell for model."""
+    """Wrapper for AudioMAE Encoder."""
     
     def __init__(
         self,
         sample_rate: int = 16000,
         timestamp_embedding_size: int = 4,
         scene_embedding_size: int = 792,
-        encoder: nn.Module() = gMLP_Encoder()
-    ):
+        encoder_params: dict = {
+            "input_res": [40, 98],
+            "patch_res": [40, 1],
+            "dim": 64,
+            "embed_dim": 4,
+            "embed_drop": 0.0,
+            "depth": 6,
+            "ff_mult": 4,
+            "prob_survival": 0.9,
+            "pre_norm": False
+        }
+    ) -> None:
         super().__init__()
         self.sample_rate = sample_rate
         self.timestamp_embedding_size = timestamp_embedding_size
         self.scene_embedding_size = scene_embedding_size
-        self.encoder = encoder
+        self.encoder = gMLP_Encoder(**encoder_params)
         self.audio_processor = MelSpectrogram(
             sr=sample_rate,
             n_mels=40,

@@ -28,8 +28,8 @@
 
 import torch
 import torch.nn.functional as F
-from torch import nn, einsum
-from einops.layers.torch import Rearrange, Reduce
+from torch import nn
+from einops.layers.torch import Rearrange
 from random import randrange
 
 
