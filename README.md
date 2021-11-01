@@ -4,25 +4,31 @@ MLP-based models for learning audio representations. Submission for [HEAR-2021@N
 
 ## Setup
 
+### kwmlp
+```
+pip install git+https://github.com/ID56/HEAR-2021-Audio-MLP.git@kwmlp
+```
+
 ### audiomlp
 ```
 pip install git+https://github.com/ID56/HEAR-2021-Audio-MLP.git@audiomlp
 ```
 
 ---
-Alternatively, you may clone the repository and install.
+Alternatively, you may clone the repository and install from the main branch, which contains the latest release.
 
 ```
 git clone https://github.com/ID56/HEAR-2021-Audio-MLP.git
 python3 -m pip install HEAR-2021-Audio-MLP
 ```
+
 ## Usage
-The module to be imported after installation is `audiomlp`.
+The module to be imported after installation is `kwmlp`.
 
 ```python
-from audiomlp import load_model, get_timestamp_embeddings, get_scene_embeddings
+from kwmlp import load_model, get_timestamp_embeddings, get_scene_embeddings
 
-model = load_model("checkpoints/audiomae.pth")
+model = load_model("checkpoints/kwmlp.pth")
 
 b, ms, sr = 2, 1000, 16000
 dummy_input = torch.randn(b, int(sr * ms / 1000))
@@ -34,7 +40,7 @@ scene_embeddings = get_scene_embeddings(dummy_input, model)
 The installation can also be verified by the [validator](https://github.com/neuralaudio/hear-validator):
 
 ```
-hear-validator audiomlp --model checkpoints/audiomae.pth
+hear-validator kwmlp --model checkpoints/kwmlp.pth
 ```
 
 ---
@@ -42,14 +48,14 @@ hear-validator audiomlp --model checkpoints/audiomae.pth
 The model can also be used independent of the HEAR common API:
 
 ```python
-from audiomlp.models import AudioMLP_Wrapper
+from kwmlp.models import AudioMLP_Wrapper
 
 model = AudioMLP_Wrapper(
     sample_rate=16000,
-    timestamp_embedding_size=8,
-    scene_embedding_size=1584,
-    encoder_type="audiomae",
-    encoder_ckpt="checkpoints/audiomae.pth"
+    timestamp_embedding_size=64,
+    scene_embedding_size=1024,
+    encoder_type="kwmlp",
+    encoder_ckpt="checkpoints/kwmlp.pth"
 )
 ```
 
@@ -63,7 +69,7 @@ model = AudioMLP_Wrapper(
 † <sub>Only considering the encoder, which is used for generating embeddings.</sub><br>
 \* <sub>Although there is no direct way to count FLOPS like parameters, you can use [facebookresearch/fvcore](https://github.com/facebookresearch/fvcore/blob/main/docs/flop_count.md). The FLOPS measured are per 1 single input spectrogram (tensor of shape `(1, 40, 98)`).</sub>
 
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />The trained checkpoints are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, as per HEAR-2021 requirements. You may also download them from drive: [ [kwmlp](https://drive.google.com/uc?id=1lywXTaJjPud41f3G_NmuRHzhDY8uNbWe&export=download) | [audiomae](https://drive.google.com/uc?id=16b96Ske0yhHE99U708lzQ_ob5KxHukiP&export=download) ].
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />The trained checkpoints are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, as per HEAR-2021 requirements. You may also download them from drive: [ [kwmlp](https://drive.google.com/uc?id=1-49LCU_zJODhmaXXJnjzsfr0ukCtHzRg&export=download) | [audiomae](https://drive.google.com/uc?id=16b96Ske0yhHE99U708lzQ_ob5KxHukiP&export=download) ].
 
 ## Notes
 
