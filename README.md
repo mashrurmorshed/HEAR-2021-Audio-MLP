@@ -4,9 +4,17 @@ MLP-based models for learning audio representations. Submission for [HEAR-2021@N
 
 ## Setup
 
+### audiomlp
 ```
-git clone https://github.com/ID56/HEAR-2021-Audio-MAE.git
-python3 -m pip install HEAR-2021-Audio-MAE
+pip install git+https://github.com/ID56/HEAR-2021-Audio-MLP.git@audiomlp
+```
+
+---
+Alternatively, you may clone the repository and install.
+
+```
+git clone https://github.com/ID56/HEAR-2021-Audio-MLP.git
+python3 -m pip install HEAR-2021-Audio-MLP
 ```
 ## Usage
 The module to be imported after installation is `audiomlp`.
@@ -49,18 +57,42 @@ model = AudioMLP_Wrapper(
 
 |   Model Name    | # Params† | GFLOPS*† | Sampling Rate | Hop Length | Timestamp Embedding | Scene Embedding |  Location     |
 | --------------- | --------- | -------  | ------------- | ---------- | ------------------- | --------------- | ------------- |
-|     kwmlp       |    424K   | 0.045    |    16000      |    10ms    |  64                 |   1024          |  [kwmlp(1.7Mb)](checkpoints/kwmlp.pth)   |
-|    audiomae     |    213K   | 0.046    |    16000      |    10ms    |  8                  |   1584          |  [audiomae(0.9Mb)](checkpoints/audiomae.pth)   |
+|     kwmlp       |    424K   | 0.034    |    16000      |    10ms    |  64                 |   1024          |  [kwmlp(1.7Mb)](checkpoints/kwmlp.pth)   |
+|    audiomae     |    213K   | 0.023    |    16000      |    10ms    |  8                  |   1584          |  [audiomae(0.9Mb)](checkpoints/audiomae.pth)   |
 
 † <sub>Only considering the encoder, which is used for generating embeddings.</sub><br>
-\* <sub>Although there is no direct way to count FLOPS like parameters, you can use [facebookresearch/fvcore](https://github.com/facebookresearch/fvcore/blob/main/docs/flop_count.md). The FLOPS measured are per 1 single input (spectrogram, tensor of shape `(1, 40, 98)`).</sub>
+\* <sub>Although there is no direct way to count FLOPS like parameters, you can use [facebookresearch/fvcore](https://github.com/facebookresearch/fvcore/blob/main/docs/flop_count.md). The FLOPS measured are per 1 single input spectrogram (tensor of shape `(1, 40, 98)`).</sub>
 
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />The trained checkpoints are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, as per HEAR-2021 requirements. You may also download them from drive: [ [audio-mae-f4-v1](https://drive.google.com/uc?id=1Fw60-jSVDMabhKaZIqnzAYHYZoNyRX8s&export=download) | [audio-mae-f8-v2](https://drive.google.com/uc?id=14p4i3JkE-OFtv43OiWS43hsoTACZhOBd&export=download) ].
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />The trained checkpoints are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, as per HEAR-2021 requirements. You may also download them from drive: [ [kwmlp](https://drive.google.com/uc?id=1lywXTaJjPud41f3G_NmuRHzhDY8uNbWe&export=download) | [audiomae](https://drive.google.com/uc?id=16b96Ske0yhHE99U708lzQ_ob5KxHukiP&export=download) ].
 
 ## Notes
 
 All models were trained on:
 - A standard Kaggle environment: a single 16GiB NVIDIA Tesla P100, CUDA 11.0, CuDNN 8.0.5, python 3.7.10.
 - KW-MLP was trained on Google Speech Commands V2-35, and the weights are a direct port of its paper [1].
-- AudioMAE was trained on the training splits from the HEAR2021 Open tasks.
-- Both models are based on gated-MLPs [2].
+- AudioMAE is an adaptation of KW-MLP that was trained on the training splits from the HEAR2021 Open tasks.
+- Both models primarily utilize gated-MLPs [2].
+
+## References
+
+```bibtex
+@misc{morshed2021attentionfree,
+      title   = {Attention-Free Keyword Spotting}, 
+      author  = {Mashrur M. Morshed and Ahmad Omar Ahsan},
+      year    = {2021},
+      eprint  = {2110.07749},
+      archivePrefix = {arXiv},
+      primaryClass  = {cs.LG}
+}
+```
+
+```bibtex
+@misc{liu2021pay,
+      title  = {Pay Attention to MLPs}, 
+      author = {Hanxiao Liu and Zihang Dai and David R. So and Quoc V. Le},
+      year   = {2021},
+      eprint = {2105.08050},
+      archivePrefix = {arXiv},
+      primaryClass  = {cs.LG}
+}
+```
