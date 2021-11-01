@@ -1,42 +1,62 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from audiomlp.models.audio_mae import KW_MLP
+from audiomlp.models.audio_mlp import KW_MLP, gMLP_Encoder
 from nnAudio.Spectrogram import MelSpectrogram, MFCC
 from einops import rearrange
 
 
-class AudioMAE_Wrapper(nn.Module):
-    """Wrapper for AudioMAE Encoder."""
+class AudioMLP_Wrapper(nn.Module):
+    """Wrapper for Audio MLP Models."""
     
     def __init__(
         self,
         sample_rate: int = 16000,
         timestamp_embedding_size: int = 64,
         scene_embedding_size: int = 1024,
+        encoder_type: str = "kwmlp",
         encoder_ckpt: str = ""
     ) -> None:
         super().__init__()
         self.sample_rate = sample_rate
         self.timestamp_embedding_size = timestamp_embedding_size
         self.scene_embedding_size = scene_embedding_size
-        self.encoder = KW_MLP()
-        
-        if encoder_ckpt != "":
-            ckpt = torch.load(encoder_ckpt, map_location="cpu")["model_state_dict"]
-            self.encoder.load_state_dict(ckpt)
-        
-        self.encoder.to_logits = nn.LayerNorm(timestamp_embedding_size)
 
-        self.audio_processor = MFCC(
-            n_mfcc=40,
-            sr=sample_rate,
-            n_mels=40,
-            n_fft=480,
-            win_length=480,
-            hop_length=160,
-            center=False
-        )
+        assert encoder_type in ["kwmlp", "audiomlp"], "Unsupported model."
+
+        if encoder_type == "kwmlp":
+            self.encoder = KW_MLP()
+            if encoder_ckpt != "":
+                ckpt = torch.load(encoder_ckpt, map_location="cpu")["model_state_dict"]
+                self.encoder.load_state_dict(ckpt)
+            self.audio_processor = MFCC(
+                n_mfcc=40,
+                sr=sample_rate,
+                n_mels=40,
+                n_fft=480,
+                win_length=480,
+                hop_length=160,
+                center=False
+            )
+            self.encoder.to_logits = nn.LayerNorm(
+                timestamp_embedding_size
+            )
+
+        elif encoder_type == "audiomae":
+            self.encoder = gMLP_Encoder(
+                embed_dim=timestamp_embedding_size
+            )
+            if encoder_ckpt != "":
+                ckpt = torch.load(encoder_ckpt, map_location="cpu")["model_state_dict"]
+                self.encoder.load_state_dict(ckpt)
+            self.audio_processor = MelSpectrogram(
+                sr=sample_rate,
+                n_mels=40,
+                n_fft=480,
+                win_length=480,
+                hop_length=160,
+                center=False
+            )
 
     def forward(self, x: torch.Tensor):
         b, num_samples = x.shape

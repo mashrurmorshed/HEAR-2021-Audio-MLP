@@ -7,7 +7,7 @@ from einops import rearrange
 import numpy as np
 from typing import Tuple
 
-from audiomlp.models import AudioMAE_Wrapper
+from audiomlp.models import AudioMLP_Wrapper
 from audiomlp.utils import initial_padding
 
 
@@ -21,11 +21,15 @@ def load_model(model_file_path: str) -> nn.Module:
         nn.Module: Model instance.
     """
 
-    embed_dim = 64
-    model = AudioMAE_Wrapper(
+    embed_dim = 8
+    scene_dim = 1584
+    encoder_type = "audiomae"
+
+    model = AudioMLP_Wrapper(
         sample_rate=16000,
         timestamp_embedding_size=embed_dim,
-        scene_embedding_size=1024,
+        scene_embedding_size=scene_dim,
+        encoder_type=encoder_type,
         encoder_ckpt=model_file_path
     )
     
@@ -92,7 +96,7 @@ def get_scene_embeddings(audio: Tensor, model: nn.Module) -> Tensor:
 
     audio = initial_padding(audio, sr=sr, hop_ms=hop_ms, window_ms=window_ms)
     
-    embed_t = 16
+    embed_t = model.scene_embedding_size // model.timestamp_embedding_size # this equates to either (1584/8 = 198) or (1024/64 = 16)
     embeddings = model(audio) # (b, t, f) 
     b, t, f = embeddings.shape
 
