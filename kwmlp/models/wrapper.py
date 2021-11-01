@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from audiomlp.models.audio_mlp import KW_MLP, gMLP_Encoder
+from kwmlp.models.audio_mlp import KW_MLP, gMLP_Encoder
 from nnAudio.Spectrogram import MelSpectrogram, MFCC
 from einops import rearrange
 

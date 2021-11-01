@@ -7,8 +7,8 @@ from einops import rearrange
 import numpy as np
 from typing import Tuple
 
-from audiomlp.models import AudioMLP_Wrapper
-from audiomlp.utils import initial_padding
+from kwmlp.models import AudioMLP_Wrapper
+from kwmlp.utils import initial_padding
 
 
 def load_model(model_file_path: str) -> nn.Module:
@@ -21,9 +21,9 @@ def load_model(model_file_path: str) -> nn.Module:
         nn.Module: Model instance.
     """
 
-    embed_dim = 8
-    scene_dim = 1584
-    encoder_type = "audiomae"
+    embed_dim = 64
+    scene_dim = 1024
+    encoder_type = "kwmlp"
 
     model = AudioMLP_Wrapper(
         sample_rate=16000,
