@@ -28,17 +28,32 @@ The installation can also be verified by the [validator](https://github.com/neur
 ```
 hear-validator audiomlp --model checkpoints/<ckpt>.pth
 ```
+
+---
+
+The model can also be used independent of the HEAR common API:
+
+```python
+from audiomlp.models import AudioMAE_Wrapper
+
+model = AudioMAE_Wrapper(
+    timestamp_embedding_size=8,
+    scene_embedding_size=1584,
+    encoder_params={"embed_dim": 8}
+)
+```
+
 ## Models
 
-|   Model Name    | # Params† | GFLOPS* | Sampling Rate | Hop Length | Timestamp Embedding | Scene Embedding |  Location |
-| --------------- | -------- | ------- | ------------- | ---------- | ------------------- | --------------- | ------------- |
-| audio-mae-f4-v1 |   212K   | 0.046   |    16000      |    10ms    |  4                  |   792           |  [audio-mae-f4-v1(1.8Mb)](checkpoints/audio-mae-f4-v1.pth)   |
-| audio-mae-f8-v2 |   213K   | 0.046   |    16000      |    10ms    |  8                  |   1584          |  [audio-mae-f8-v2(1.8Mb)](checkpoints/audio-mae-f8-v2.pth)   |
+|   Model Name    | Release   | # Params† | GFLOPS* | Sampling Rate | Hop Length | Timestamp Embedding | Scene Embedding |  Location     |
+| --------------- | --------- | --------- | ------- | ------------- | ---------- | ------------------- | --------------- | ------------- |
+| audio-mae-f4-v1 | v1.0.0-f4 |    212K   | 0.046   |    16000      |    10ms    |  4                  |   792           |  [audio-mae-f4-v1(1.8Mb)](checkpoints/audio-mae-f4-v1.pth)   |
+| audio-mae-f8-v2 | v2.0.0-f8 |    213K   | 0.046   |    16000      |    10ms    |  8                  |   1584          |  [audio-mae-f8-v2(1.8Mb)](checkpoints/audio-mae-f8-v2.pth)   |
 
 † <sub>Only considering the encoder, which is used for generating embeddings. The whole autoencoder has twice the parameters.</sub><br>
 \* <sub>Although there is no direct way to count FLOPS like parameters, you can use [facebookresearch/fvcore](https://github.com/facebookresearch/fvcore/blob/main/docs/flop_count.md). The FLOPS measured are per single 1s audio input (tensor of shape `(1, 16000)`).</sub>
 
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />The trained checkpoints are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>. You may also download them from drive: [ [audio-mae-f4-v1](https://drive.google.com/uc?id=1Fw60-jSVDMabhKaZIqnzAYHYZoNyRX8s&export=download) | [audio-mae-f8-v2](https://drive.google.com/uc?id=14p4i3JkE-OFtv43OiWS43hsoTACZhOBd&export=download) ].
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />The trained checkpoints are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, as per HEAR-2021 requirements. You may also download them from drive: [ [audio-mae-f4-v1](https://drive.google.com/uc?id=1Fw60-jSVDMabhKaZIqnzAYHYZoNyRX8s&export=download) | [audio-mae-f8-v2](https://drive.google.com/uc?id=14p4i3JkE-OFtv43OiWS43hsoTACZhOBd&export=download) ].
 
 ## Notes
 
