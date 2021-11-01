@@ -50,7 +50,7 @@ model = AudioMLP_Wrapper(
 |   Model Name    | # Params† | GFLOPS*† | Sampling Rate | Hop Length | Timestamp Embedding | Scene Embedding |  Location     |
 | --------------- | --------- | -------  | ------------- | ---------- | ------------------- | --------------- | ------------- |
 |     kwmlp       |    424K   | 0.045    |    16000      |    10ms    |  64                 |   1024          |  [kwmlp(1.7Mb)](checkpoints/kwmlp.pth)   |
-|    audiomae     |    213K   | 0.046    |    16000      |    10ms    |  8                  |   1584          |  [audiomae(1.7Mb)](checkpoints/audiomae.pth)   |
+|    audiomae     |    213K   | 0.046    |    16000      |    10ms    |  8                  |   1584          |  [audiomae(0.9Mb)](checkpoints/audiomae.pth)   |
 
 † <sub>Only considering the encoder, which is used for generating embeddings.</sub><br>
 \* <sub>Although there is no direct way to count FLOPS like parameters, you can use [facebookresearch/fvcore](https://github.com/facebookresearch/fvcore/blob/main/docs/flop_count.md). The FLOPS measured are per 1 single input (spectrogram, tensor of shape `(1, 40, 98)`).</sub>

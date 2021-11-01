@@ -235,7 +235,7 @@ class AudioMAE(nn.Module):
         input_res = [40, 98],
         patch_res = [40, 1],
         dim = 64,
-        embed_dim = 4,
+        embed_dim = 8,
         embed_drop = 0.0,
         encoder_depth = 6,
         decoder_depth = 6,

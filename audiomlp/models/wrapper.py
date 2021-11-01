@@ -22,7 +22,7 @@ class AudioMLP_Wrapper(nn.Module):
         self.timestamp_embedding_size = timestamp_embedding_size
         self.scene_embedding_size = scene_embedding_size
 
-        assert encoder_type in ["kwmlp", "audiomlp"], "Unsupported model."
+        assert encoder_type in ["kwmlp", "audiomae"], "Unsupported model."
 
         if encoder_type == "kwmlp":
             self.encoder = KW_MLP()
