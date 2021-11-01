@@ -25,7 +25,7 @@ def load_model(model_file_path: str) -> nn.Module:
     model = AudioMAE_Wrapper(
         sample_rate=16000,
         timestamp_embedding_size=embed_dim,
-        scene_embedding_size=embed_dim * 98,
+        scene_embedding_size=1024,
         encoder_ckpt=model_file_path
     )
     
