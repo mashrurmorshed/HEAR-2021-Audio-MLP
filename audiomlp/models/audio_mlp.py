@@ -29,7 +29,7 @@
 import torch
 import torch.nn.functional as F
 from torch import nn
-from einops.layers.torch import Rearrange
+from einops.layers.torch import Rearrange, Reduce
 from random import randrange
 
 
@@ -235,7 +235,7 @@ class AudioMAE(nn.Module):
         input_res = [40, 98],
         patch_res = [40, 1],
         dim = 64,
-        embed_dim = 4,
+        embed_dim = 8,
         embed_drop = 0.0,
         encoder_depth = 6,
         decoder_depth = 6,
@@ -280,3 +280,54 @@ class AudioMAE(nn.Module):
         x = self.encoder(x)
         x = self.decoder(x)
         return x
+
+
+
+class KW_MLP(nn.Module):
+    """Keyword-MLP."""
+    
+    def __init__(
+        self,
+        input_res = [40, 98],
+        patch_res = [40, 1],
+        num_classes = 35,
+        dim = 64,
+        depth = 12,
+        ff_mult = 4,
+        channels = 1,
+        prob_survival = 0.9,
+        pre_norm = False,
+        **kwargs
+    ):
+        super().__init__()
+        image_height, image_width = input_res
+        patch_height, patch_width = patch_res
+        assert (image_height % patch_height) == 0 and (image_width % patch_width) == 0, 'image height and width must be divisible by patch size'
+        num_patches = (image_height // patch_height) * (image_width // patch_width)
+
+        P_Norm = PreNorm if pre_norm else PostNorm
+        
+        dim_ff = dim * ff_mult
+
+        self.to_patch_embed = nn.Sequential(
+            Rearrange('b (h p1) (w p2) -> b (h w) (p1 p2)', p1 = patch_height, p2 = patch_width),
+            nn.Linear(channels * patch_height * patch_width, dim)
+        )
+
+        self.prob_survival = prob_survival
+
+        self.layers = nn.ModuleList(
+            [Residual(P_Norm(dim, gMLPBlock(dim=dim, dim_ff=dim_ff, seq_len=num_patches))) for i in range(depth)]
+        )
+
+        self.to_logits = nn.Sequential(
+            nn.LayerNorm(dim),
+            Reduce('b n d -> b d', 'mean'),
+            nn.Linear(dim, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.to_patch_embed(x)
+        layers = self.layers if not self.training else dropout_layers(self.layers, self.prob_survival)
+        x = nn.Sequential(*layers)(x)
+        return self.to_logits(x)
