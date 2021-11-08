@@ -5,20 +5,13 @@ MLP-based models for learning audio representations. Submission for [HEAR-2021@N
 ## Setup
 
 ```
-git clone https://github.com/ID56/HEAR-2021-Audio-MLP.git
-
-# kwmlp
-python3 -m pip install HEAR-2021-Audio-MLP/kwmlp_src/
-
-# audiomlp
-python3 -m pip install HEAR-2021-Audio-MLP/audiomlp_src/
+pip install -e 'git+https://github.com/ID56/HEAR-2021-Audio-MLP.git#egg=hearaudiomlp'
 ```
 
 ## Usage
-The modules to be imported after installation are `kwmlp` or `audiomlp`.
 
 ```python
-from kwmlp import load_model, get_timestamp_embeddings, get_scene_embeddings # or from audiomlp
+from hearaudiomlp.kwmlp import load_model, get_timestamp_embeddings, get_scene_embeddings # or from hearaudiomlp.audiomlp
 
 model = load_model("checkpoints/kwmlp.pth")
 
@@ -27,13 +20,6 @@ dummy_input = torch.randn(b, int(sr * ms / 1000))
 
 embeddings, timestamps = get_timestamp_embeddings(dummy_input, model)
 scene_embeddings = get_scene_embeddings(dummy_input, model)
-```
-
-The installations can also be verified by the [validator](https://github.com/neuralaudio/hear-validator):
-
-```
-hear-validator kwmlp --model checkpoints/kwmlp.pth
-hear-validator audiomlp --model checkpoints/audiomae.pth
 ```
 
 ## Models
