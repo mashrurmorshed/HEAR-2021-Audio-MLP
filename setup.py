@@ -2,7 +2,7 @@ import setuptools
 from setuptools import setup
 
 setup(
-    name="audiomlp",
+    name="hearaudiomlp",
     version="1.0.0",
     description="MLP-based feature encoder for audio.",
     url="https://github.com/ID56/HEAR-2021-Audio-MLP",

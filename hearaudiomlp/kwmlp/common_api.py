@@ -7,8 +7,8 @@ from einops import rearrange
 import numpy as np
 from typing import Tuple
 
-from kwmlp.models import AudioMLP_Wrapper
-from kwmlp.utils import initial_padding
+from .models import AudioMLP_Wrapper
+from .utils import initial_padding
 
 
 def load_model(model_file_path: str) -> nn.Module:
