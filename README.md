@@ -6,14 +6,13 @@ MLP-based models for learning audio representations. Submission for [HEAR-2021@N
 
 ### kwmlp-single-interp
 ```
-pip install git+https://github.com/ID56/HEAR-2021-Audio-MLP.git@kwmlp-single-interp
+pip install git+https://github.com/ID56/HEAR-2021-Audio-MLP.git@kwmlp-mean
 ```
-
 ---
 Alternatively, you may clone the repository and install from the appropriate branch.
 
 ```
-git clone --single-branch https://github.com/ID56/HEAR-2021-Audio-MLP.git --branch kwmlp-single-interp
+git clone --single-branch https://github.com/ID56/HEAR-2021-Audio-MLP.git --branch kwmlp-mean
 python3 -m pip install HEAR-2021-Audio-MLP
 ```
 

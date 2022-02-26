@@ -96,30 +96,19 @@ def get_scene_embeddings(audio: Tensor, model: nn.Module) -> Tensor:
 
     audio = initial_padding(audio, sr=sr, hop_ms=hop_ms, window_ms=window_ms)
     
-    embed_t = model.scene_embedding_size // model.timestamp_embedding_size # this equates to either (1584/8 = 198) or (1024/64 = 16)
+    embed_t = model.scene_embedding_size // model.timestamp_embedding_size # (1024/64 = 16)
     embeddings = model(audio) # (b, t, f) 
     b, t, f = embeddings.shape
 
     if t < embed_t:   # pad to embed_t
         embeddings = F.pad(embeddings, (0, 0, 0, embed_t - t), "constant", 0)
     
-    elif t > embed_t: # temporal interpolation
-        embeddings = rearrange(embeddings, "b t f -> b f t")
-        embeddings = F.interpolate(embeddings, size=embed_t, mode="linear", align_corners=True)
-        # Decided to do repeated downsampling instead! Refer to: https://twitter.com/rzhang88/status/1258222917986312195?lang=en
-
-        # power_of_two = np.log2(t / embed_t)
-        # downsamp_reps = int(np.floor(power_of_two))
-        # rem = power_of_two - downsamp_reps
-        
-        # for i in range(downsamp_reps):                   
-        #     embeddings = F.interpolate(embeddings, size=embeddings.shape[-1]//2, mode="linear", align_corners=True)
-            
-        # if rem > 0:    
-        #     embeddings = F.interpolate(embeddings, size=embed_t, mode="linear", align_corners=True)
-        
-        embeddings = rearrange(embeddings, "b f t -> b t f")
-        
-    # flatten but maintain temporal order    
-    embeddings = rearrange(embeddings, "b t f -> b (f t)")
-    return embeddings
+    
+    ## simple mean
+    embeddings = rearrange(embeddings, "b t f -> b (t f)")
+    p = embeddings.shape[1] % model.scene_embedding_size   # t * f mod 1024, where t * f >= 1024 due to padding above
+    if p:
+        embeddings = F.pad(embeddings, (0, 0, 0, p), "constant", 0)  # pad to multiple of 1024
+    embeddings = rearrange(embeddings, "b (f n) -> b f n", f = model.scene_embedding_size) # reshape to b, 1024, n
+    
+    return embeddings.mean(axis=2)
