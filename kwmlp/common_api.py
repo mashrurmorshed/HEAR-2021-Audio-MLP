@@ -105,18 +105,18 @@ def get_scene_embeddings(audio: Tensor, model: nn.Module) -> Tensor:
     
     elif t > embed_t: # temporal interpolation
         embeddings = rearrange(embeddings, "b t f -> b f t")
-        # embeddings = F.interpolate(embeddings, size=embed_t, mode="linear", align_corners=True)
+        embeddings = F.interpolate(embeddings, size=embed_t, mode="linear", align_corners=True)
         # Decided to do repeated downsampling instead! Refer to: https://twitter.com/rzhang88/status/1258222917986312195?lang=en
 
-        power_of_two = np.log2(t / embed_t)
-        downsamp_reps = int(np.floor(power_of_two))
-        rem = power_of_two - downsamp_reps
+        # power_of_two = np.log2(t / embed_t)
+        # downsamp_reps = int(np.floor(power_of_two))
+        # rem = power_of_two - downsamp_reps
         
-        for i in range(downsamp_reps):                   
-            embeddings = F.interpolate(embeddings, size=embeddings.shape[-1]//2, mode="linear", align_corners=True)
+        # for i in range(downsamp_reps):                   
+        #     embeddings = F.interpolate(embeddings, size=embeddings.shape[-1]//2, mode="linear", align_corners=True)
             
-        if rem > 0:    
-            embeddings = F.interpolate(embeddings, size=embed_t, mode="linear", align_corners=True)
+        # if rem > 0:    
+        #     embeddings = F.interpolate(embeddings, size=embed_t, mode="linear", align_corners=True)
         
         embeddings = rearrange(embeddings, "b f t -> b t f")
         
