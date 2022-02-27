@@ -96,19 +96,20 @@ def get_scene_embeddings(audio: Tensor, model: nn.Module) -> Tensor:
 
     audio = initial_padding(audio, sr=sr, hop_ms=hop_ms, window_ms=window_ms)
     
-    embed_t = model.scene_embedding_size // model.timestamp_embedding_size # (1024/64 = 16)
     embeddings = model(audio) # (b, t, f) 
-    b, t, f = embeddings.shape
-
-    if t < embed_t:   # pad to embed_t
-        embeddings = F.pad(embeddings, (0, 0, 0, embed_t - t), "constant", 0)
-    
-    
-    ## simple mean
     embeddings = rearrange(embeddings, "b t f -> b (t f)")
-    p = embeddings.shape[1] % model.scene_embedding_size   # t * f mod 1024, where t * f >= 1024 due to padding above
-    if p:
-        embeddings = F.pad(embeddings, (0, 0, 0, p), "constant", 0)  # pad to multiple of 1024
-    embeddings = rearrange(embeddings, "b (f n) -> b f n", f = model.scene_embedding_size) # reshape to b, 1024, n
+
+    embed_size = embeddings.shape[1]
+    target_size = model.scene_embedding_size
     
-    return embeddings.mean(axis=2)
+    if embed_size < target_size:
+        embeddings = F.pad(embeddings, (0, target_size - embed_size), "constant", 0)
+
+    elif embed_size > target_size:
+        p = target_size - embed_size % target_size
+        embeddings = F.pad(embeddings, (0, p), "constant", 0)
+
+        embeddings = rearrange(embeddings, "b (f n) -> b f n", f=target_size)
+        embeddings = embeddings.mean(axis=2)
+    
+    return embeddings
