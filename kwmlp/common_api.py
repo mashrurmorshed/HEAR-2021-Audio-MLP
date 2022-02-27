@@ -99,7 +99,7 @@ def get_scene_embeddings(audio: Tensor, model: nn.Module) -> Tensor:
     embeddings = model(audio) # (b, t, f)
 
     embed_t = model.scene_embedding_size / model.timestamp_embedding_size # 1024 / 64 = 16
-    actual_t = model.shape[1]
+    actual_t = embeddings.shape[1]
 
     if actual_t < embed_t:
         embeddings = F.pad(embeddings, (0, 0, 0, embed_t - actual_t), "constant", 0)
