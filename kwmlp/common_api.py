@@ -96,20 +96,21 @@ def get_scene_embeddings(audio: Tensor, model: nn.Module) -> Tensor:
 
     audio = initial_padding(audio, sr=sr, hop_ms=hop_ms, window_ms=window_ms)
     
-    embeddings = model(audio) # (b, t, f) 
-    embeddings = rearrange(embeddings, "b t f -> b (t f)")
+    embeddings = model(audio) # (b, t, f)
 
-    embed_size = embeddings.shape[1]
-    target_size = model.scene_embedding_size
+    embed_t = model.scene_embedding_size / model.timestamp_embedding_size # 1024 / 64 = 16
+    actual_t = model.shape[1]
+
+    if actual_t < embed_t:
+        embeddings = F.pad(embeddings, (0, 0, 0, embed_t - actual_t), "constant", 0)
+    elif embed_t > actual_t:
+        p = embed_t - actual_t % embed_t
+        embeddings = F.pad(embeddings, (0, 0, 0, p), "constant", 0)
+
+    embeddings = rearrange(embeddings, "b (t n) f -> b t n f", t=embed_t) # (b, 16, n, 64)
+
+    # reduce (b, 16, n, 64) to (b, 16, 64)
+    embeddings = embeddings.mean(axis=2)
     
-    if embed_size < target_size:
-        embeddings = F.pad(embeddings, (0, target_size - embed_size), "constant", 0)
-
-    elif embed_size > target_size:
-        p = target_size - embed_size % target_size
-        embeddings = F.pad(embeddings, (0, p), "constant", 0)
-
-        embeddings = rearrange(embeddings, "b (f n) -> b f n", f=target_size)
-        embeddings = embeddings.mean(axis=2)
-    
-    return embeddings
+    # flatten in column major order
+    return rearrange(embeddings, "b t f -> b (f t)")
