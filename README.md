@@ -6,7 +6,7 @@ MLP-based models for learning audio representations. Submission for [HEAR-2021@N
 
 ### kwmlp
 ```
-pip install git+https://github.com/ID56/HEAR-2021-Audio-MLP.git@kwmlp-8
+pip install git+https://github.com/ID56/HEAR-2021-Audio-MLP.git@kwmlp-10
 ```
 
 ### audiomlp

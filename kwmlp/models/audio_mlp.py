@@ -292,7 +292,7 @@ class KW_MLP(nn.Module):
         patch_res = [40, 1],
         num_classes = 35,
         dim = 64,
-        depth = 8,
+        depth = 10,
         ff_mult = 4,
         channels = 1,
         prob_survival = 0.9,
