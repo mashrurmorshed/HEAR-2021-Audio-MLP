@@ -26,7 +26,7 @@ class AudioMLP_Wrapper(nn.Module):
 
         if encoder_type == "kwmlp":
             if os.environ.get("KWMLP_DEPTH", False):
-                depth = os.environ["KWMLP_DEPTH"]
+                depth = int(os.environ["KWMLP_DEPTH"])
                 self.encoder = KW_MLP(depth=depth)
             else:
                 self.encoder = KW_MLP()
@@ -36,7 +36,7 @@ class AudioMLP_Wrapper(nn.Module):
                 self.encoder.load_state_dict(ckpt)
 
             if os.environ.get("EMBED_LAYER", False):
-                embed_layer = os.environ["EMBED_LAYER"]
+                embed_layer = int(os.environ["EMBED_LAYER"])
                 self.encoder.layers = self.encoder.layers[:embed_layer]
 
             self.audio_processor = MFCC(
