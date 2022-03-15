@@ -4,7 +4,7 @@ from torch.nn import functional as F
 from kwmlp.models.audio_mlp import KW_MLP, gMLP_Encoder
 from nnAudio.Spectrogram import MelSpectrogram, MFCC
 from einops import rearrange
-
+import os
 
 class AudioMLP_Wrapper(nn.Module):
     """Wrapper for Audio MLP Models."""
@@ -25,10 +25,20 @@ class AudioMLP_Wrapper(nn.Module):
         assert encoder_type in ["kwmlp", "audiomae"], "Unsupported model."
 
         if encoder_type == "kwmlp":
-            self.encoder = KW_MLP()
+            if os.environ.get("KWMLP_DEPTH", False):
+                depth = os.environ["KWMLP_DEPTH"]
+                self.encoder = KW_MLP(depth=depth)
+            else:
+                self.encoder = KW_MLP()
+
             if encoder_ckpt != "":
                 ckpt = torch.load(encoder_ckpt, map_location="cpu")["model_state_dict"]
                 self.encoder.load_state_dict(ckpt)
+
+            if os.environ.get("EMBED_LAYER", False):
+                embed_layer = os.environ["EMBED_LAYER"]
+                self.encoder.layers = self.encoder.layers[:embed_layer]
+
             self.audio_processor = MFCC(
                 n_mfcc=40,
                 sr=sample_rate,
